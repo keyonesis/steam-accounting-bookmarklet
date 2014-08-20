@@ -22,7 +22,8 @@ Simply create a new bookmark with the contents of the js file and put it between
 
 Limitations/Known Issues
 ------------------------
-Steam does track key redemptions (from game bundles, retail purchase, etc), but has no way of knowing how much you paid for it, so those costs are excluded.
+Steam does track key redemptions (from game bundles, retail purchase, etc.), but has no way of knowing how much you paid for it, so those costs are excluded.
+
 I just do not know what happens if you use a voucher for adding Steam funds. Perhaps you won't see the funds adding to your balance... Let me know!
 
 Authors
