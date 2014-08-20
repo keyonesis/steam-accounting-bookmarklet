@@ -29,4 +29,5 @@ I just do not know what happens if you use a voucher for adding Steam funds. Per
 Authors
 ------
 Jonathan Prusik @jprusik [www.classynemesis.com](http://www.classynemesis.com)
-Hauke Hain
+
+Hauke Hain @hihain
