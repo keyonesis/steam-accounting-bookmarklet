@@ -17,7 +17,7 @@ Usage
 Simply create a new bookmark with the contents of the js file and put it between "```javascript:(function(){```" and "```})();```". When you're on your account page, click the bookmarklet to get a summary of your account spending at the top of the page.
 > If you want always the newest version of the script, you may add the following to you bookmarks (create a new bookmark with your browsers bookmark manager):
 ```
-javascript:(function(){var%20e=document.createElement("script");e.type="text/javascript";e.src="https://raw.githubusercontent.com/hihain/steam-accounting-bookmarklet/master/steamaccounting.js";document.getElementsByTagName("head")[0].appendChild(e)})();
+javascript:(function(){var e=document.createElement("script");e.type="text/javascript";e.src="https://raw.githubusercontent.com/hihain/steam-accounting-bookmarklet/master/steamaccounting.js";document.getElementsByTagName("head")[0].appendChild(e)})();
 ```
 
 Limitations/Known Issues
