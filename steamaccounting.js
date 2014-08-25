@@ -4,23 +4,18 @@
     var totals={'debits':[], 'credits':[], 'wallet':[], 'debitsCount':0, 'creditsCount':0, 'cdkeyCount':0};
     
     jQuery.each(['store','ingame','market'], function( index, value ){
-      var debits={'transactions':[], 'currencySum':[]};
-      var credits={'transactions':[], 'currencySum':[]};
+      var storeTotals={'debits':[], 'credits':[], 'debitsCount':0, 'creditsCount':0};
 
-      /* initialize currencySum */
+      /* initialize currencies */
       jQuery(currencies).each(function(){
-        debits.currencySum[this]=0;
-        credits.currencySum[this]=0;
+        storeTotals.debits[this]=0;
+        storeTotals.credits[this]=0;
       });
 
       jQuery('#'+value+'_transactions .transactionRow').each(function(){
           var transaction = {
               'currency':jQuery(this).find('.transactionRowPrice').text().replace(/[\w\s-.,]/g, ''),
               'price':toNumber(jQuery(this).find('.transactionRowPrice').text()),
-/*              'date':jQuery(this).find('.transactionRowDate').text(),
-              'event':jQuery(this).find('.transactionRowEvent').text(),
-              'description':jQuery(this).find('.transactionRowEvent .transactionRowTitle').text(),
-              'descriptionSub':jQuery(this).find('.transactionRowEvent .itemSubtext').text() */
           };
 
           /* Special case for Russian Rubles */
@@ -35,54 +30,55 @@
                 totals.debits[currency_string]=0;
                 totals.credits[currency_string]=0;
                 totals.wallet[currency_string]=0;
-                debits.currencySum[currency_string]=0;
-                credits.currencySum[currency_string]=0;
+                storeTotals.debits[currency_string]=0;
+                storeTotals.credits[currency_string]=0;
             }
 
           /* Check if the transaction was a credit to the account */
           if (jQuery(this).find('.transactionRowEvent').hasClass('walletcredit')){
             /* sum currencies individually */
             if (transaction.currency){
-                credits.currencySum[currency_string] += transaction.price;
+                storeTotals.credits[currency_string] += transaction.price;
                 totals.credits[currency_string] += transaction.price;
                 if (value==='store') { /* Save added fundy by store for total spent calculation */
                   totals.wallet[currency_string] += transaction.price;
                 }
             }
-            credits.transactions.push(transaction);
-            totals.creditsCount +=1;
+            storeTotals.creditsCount++;
           }
           /* Or debit */
           else if (jQuery(this).find('.transactionRowEvent').hasClass('charge')){
             /* sum currencies individually */
             if (transaction.currency){
-                debits.currencySum[currency_string] += transaction.price;
+                storeTotals.debits[currency_string] += transaction.price;
                 totals.debits[currency_string] += transaction.price;
             }
-            debits.transactions.push(transaction);
-            totals.debitsCount += 1;
+            storeTotals.debitsCount++;
           }
           /* count CD keys*/
           else if (jQuery(this).find('.transactionRowEvent').hasClass('cdkey')){
-            totals.cdkeyCount += 1;
+            totals.cdkeyCount++;
           }
       });
+
+      totals.debitsCount += storeTotals.debitsCount;
+      totals.creditsCount += storeTotals.creditsCount;
 
       /* Accounts output */
       total = '0.00';
       if (currencies.length > 0) {
-        total = currencies[0] + formatNum(debits.currencySum[currencies[0]]-credits.currencySum[currencies[0]]);
+        total = currencies[0] + formatNum(storeTotals.debits[currencies[0]] - storeTotals.credits[currencies[0]]);
       }
       jQuery('.sr'+value).remove();
       jQuery('.accountInfoBlock .accountBalance:last').before('<div class="accountRow accountBalance sr'+value+'"><div class="accountData price">'+total+'</div><div class="accountLabel">'+value.charAt(0).toUpperCase()+value.slice(1)+' Transactions <a id="srj'+value+'" href="javascript:(function(){if(jQuery(\'#srj'+value+'\').text()===\'[+]\') {jQuery(\'#srj'+value+'\').text(\'[-]\');jQuery(\'.srh'+value+'\').show();} else {jQuery(\'#srj'+value+'\').text(\'[+]\');jQuery(\'.srh'+value+'\').hide();}})();">[+]</a></div></div>');
-      jQuery('.accountInfoBlock .accountBalance:last').before('<table id="steam_'+value+'_account_table" class="sr'+value+' srh'+value+'" style="margin:7px 0;width:100%;border-collapse:collapse;"><tbody><tr style="border-top:2px solid #3c3d3e;border-bottom:1px solid #3c3d3e;}"><th style="border-right:2px solid #3c3d3e;width:50%">Debit</th><th>Credits</th></tr></tbody></table>');
+      jQuery('.accountInfoBlock .accountBalance:last').before('<table id="steam_'+value+'_account_table" class="sr'+value+' srh'+value+'" style="margin:7px 0;width:100%;border-collapse:collapse;"><tbody><tr style="border-top:2px solid #3c3d3e;border-bottom:1px solid #3c3d3e;}"><th style="border-right:2px solid #3c3d3e;width:50%">Debit</th><th>Credit</th></tr></tbody></table>');
       jQuery(currencies).each(function(){
-        jQuery('#steam_'+value+'_account_table tbody').append('<tr><td style="border-right:2px solid #3c3d3e;padding-left:.5em;">'+this+formatNum(debits.currencySum[this])+'</td><td style="padding-left:.5em;">'+this+formatNum(credits.currencySum[this])+'</td></tr>');
+        jQuery('#steam_'+value+'_account_table tbody').append('<tr><td style="border-right:2px solid #3c3d3e;padding-left:.5em;">'+this+formatNum(storeTotals.debits[this])+'</td><td style="padding-left:.5em;">'+this+formatNum(storeTotals.credits[this])+'</td></tr>');
       });
-      jQuery('.accountInfoBlock .accountBalance:last').before('<div class="accountRow accountBalance sr'+value+' srh'+value+'" style="margin:0"><div class="accountData">'+debits.transactions.length+'</div><div class="accountLabel">'+((value==='store') ? 'Purchase' : 'Steam Wallet Debiting')+' Transactions</div></div>');
-      jQuery('.accountInfoBlock .accountBalance:last').before('<div class="accountRow accountBalance sr'+value+' srh'+value+'" style="margin:0"><div class="accountData">'+credits.transactions.length+'</div><div class="accountLabel">Steam Wallet Crediting Transactions</div></div>');
+      jQuery('.accountInfoBlock .accountBalance:last').before('<div class="accountRow accountBalance sr'+value+' srh'+value+'" style="margin:0"><div class="accountData">'+storeTotals.debitsCount+'</div><div class="accountLabel">'+((value==='store') ? 'Purchase' : 'Steam Wallet Debiting')+' Transactions</div></div>');
+      jQuery('.accountInfoBlock .accountBalance:last').before('<div class="accountRow accountBalance sr'+value+' srh'+value+'" style="margin:0"><div class="accountData">'+storeTotals.creditsCount+'</div><div class="accountLabel">Steam Wallet Crediting Transactions</div></div>');
       if (value==='store') jQuery('.accountInfoBlock .accountBalance:last').before('<div class="accountRow accountBalance sr'+value+' srh'+value+'" style="margin:0"><div class="accountData">'+totals.cdkeyCount+'</div><div class="accountLabel">CD Key Redemption Transactions</div></div>');
-      jQuery('.accountInfoBlock .accountBalance:last').before('<div class="accountRow accountBalance sr'+value+' srh'+value+'" style="border-top:1px solid #3c3d3e;margin-bottom:16px"><div class="accountData">'+(((value==='store') ? totals.cdkeyCount : 0)+debits.transactions.length+credits.transactions.length)+'</div><div class="accountLabel">Total Transactions</div></div>');
+      jQuery('.accountInfoBlock .accountBalance:last').before('<div class="accountRow accountBalance sr'+value+' srh'+value+'" style="border-top:1px solid #3c3d3e;margin-bottom:16px"><div class="accountData">'+(((value==='store') ? totals.cdkeyCount : 0)+storeTotals.debitsCount+storeTotals.creditsCount)+'</div><div class="accountLabel">Total Transactions</div></div>');
       jQuery('.srh'+value).hide();
     });
 
@@ -103,7 +99,7 @@
     jQuery('.accountInfoBlock .accountBalance:last').before('<div class="accountRow accountBalance srtotal srhtotal" style="border-top:1px solid #3c3d3e;"><div class="accountData">'+(totals.cdkeyCount+totals.debitsCount+totals.creditsCount)+'</div><div class="accountLabel">Total Transactions</div></div>');
     jQuery('.srhtotal').hide();
 
-    /* Total Invsested output */
+    /* Total Invested (= total + store credit + wallet balance) output */
     total = '0.00';
     if (currencies.length > 0) {
       currentWallet = jQuery('.accountRow.accountBalance .accountData.price').filter(function() {return(jQuery(this).parent().attr('class').replace(/accountRow|accountBalance|\s*/g, "") == '');}).text(); /* Filter the only element that has only the original CSS classes */
