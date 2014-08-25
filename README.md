@@ -38,6 +38,6 @@ Author
 Steam Accounting: Hauke Hain @hihain
 
 
-Steam Accounting Bookmarklet is originally a fork of Steam Reciept by
-Jonathan Prusik @jprusik [www.classynemesis.com](http://www.classynemesis.com)
-Today they only share a few bity and bytes of source code. :)
+>Steam Accounting Bookmarklet is originally a fork of Steam Reciept by
+>Jonathan Prusik @jprusik [www.classynemesis.com](http://www.classynemesis.com)
+>Today they only share a few bity and bytes of source code. :)
